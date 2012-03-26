@@ -1,0 +1,9 @@
+*.o
+*.so
+*.bin
+*.d
+*.elf
+*.map
+Makelib
+lib
+BROFist
