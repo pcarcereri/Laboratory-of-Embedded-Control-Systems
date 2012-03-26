@@ -1,0 +1,4 @@
+#!/bin/sh
+
+export LEGO_OSEK_HOME="/home/dacav/Uni/Corsi/Lab-Embedded/nxtOSEK/"
+
