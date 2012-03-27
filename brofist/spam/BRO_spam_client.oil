@@ -21,7 +21,6 @@ CPU ATMEL_AT91SAM7S256
 	{
   		RESOURCEPROPERTY = STANDARD;
   	};
-
  	
   	TASK BRO_Comm
     {
@@ -31,6 +30,15 @@ CPU ATMEL_AT91SAM7S256
     	SCHEDULE = FULL;
     	STACKSIZE = 512;
   	};
+
+    TASK RunExperiment
+    {
+        AUTOSTART = FALSE;
+        PRIORITY = 1;
+        ACTIVATION = 1;
+        SCHEDULE = FULL;
+        STACKSIZE = 512;
+    };
 
   	TASK DisplayTask
   	{
@@ -63,7 +71,6 @@ CPU ATMEL_AT91SAM7S256
       		APPMODE = appmode1;
     	};
   	};
-     
 
   	ALARM lcd_update_alarm
   	{
@@ -79,4 +86,19 @@ CPU ATMEL_AT91SAM7S256
       		APPMODE = appmode1;
     	};
   	};
+
+    ALARM Experiment_alarm
+    {
+        COUNTER = SysTimerCnt;
+        ACTION = ACTIVATETASK
+        {
+            TASK = RunExperiment;
+        };
+        AUTOSTART = TRUE
+        {
+            ALARMTIME = 1;
+            CYCLETIME = 5000;   // 5 seconds
+            APPMODE = appmode1;
+        };
+    };
 };

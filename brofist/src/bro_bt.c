@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdint.h>
 
 #include "headers/bro_bt.h"
 
@@ -94,6 +95,14 @@ size_t bro_bt_scan_devices (bro_bt_device_t *devices[MAX_BT_DEVICES])
     return num_rsp;
 }
 
+typedef union {
+    float f;
+    uint32_t u;
+    uint32_t i;
+} value_t;
+
+FILE *OutDump = NULL;
+
 int bro_bt_client_fist (bro_fist_t * input_fist, bro_fist_t * out_fist,
                         int spam_sock) {
     
@@ -103,9 +112,25 @@ int bro_bt_client_fist (bro_fist_t * input_fist, bro_fist_t * out_fist,
     buffer.size = sizeof(bro_fist_t) * BUFFER_SIZE;
     memcpy (buffer.packets, input_fist, ( sizeof(bro_fist_t) * BUFFER_SIZE));
                         
-    res = send(spam_sock, &buffer, sizeof(bro_spam_fists_t), 0);
-    if (res < 0) return res;
+    //res = send(spam_sock, &buffer, sizeof(bro_spam_fists_t), 0);
+    //if (res < 0) return res;
+    if (OutDump == NULL) {
+        OutDump = fopen("__Dump.txt", "wt");
+    }
+
     res = recv(spam_sock, out_fist, ( sizeof(bro_fist_t) * BUFFER_SIZE ), 0);
+
+    value_t tstamp;
+    value_t power;
+    value_t tacho;
+
+    tstamp.f = out_fist[0].data;
+    power.f = out_fist[1].data;
+    tacho.f = out_fist[2].data;
+
+    fprintf(OutDump, "time=%u power=%i tacho=%i\n",
+            tstamp.u, power.i, tacho.i);
+    fflush(OutDump);
     
     return res;
 };

@@ -46,6 +46,7 @@ void ecrobot_device_terminate()
 /*--------------------------------------------------------------------------*/
 /* Function to be invoked from a category 2 interrupt                       */
 /*--------------------------------------------------------------------------*/
+
 void user_1ms_isr_type2(void)
 {
     StatusType ercd;
@@ -59,40 +60,83 @@ void user_1ms_isr_type2(void)
     }
 }
 
+typedef union {
+    float f;
+    U32 u;
+    S32 i;
+} value_t;
+
+typedef enum {
+    PHASE_START, PHASE_PAUSE, PHASE_RUNNING
+} phase_t;
+
+struct State {
+    phase_t phase;
+    int speed;
+} State = {
+    .phase = PHASE_PAUSE,
+    .speed = 0
+};
+
+#define MOTOR_PORT NXT_PORT_A
+#define INCREMENT 10
+
+TASK(RunExperiment)
+{
+    phase_t p = State.phase;
+    int s = State.speed;
+
+    switch (p) {
+        case PHASE_PAUSE:
+            if (s < 100) {
+                nxt_motor_set_count(MOTOR_PORT, 0);
+                s += INCREMENT;
+                p = PHASE_START;
+            } else {
+                ShutdownOS(E_OK);
+            }
+            break;
+        case PHASE_RUNNING:
+            p = PHASE_PAUSE;
+            break;
+        default:
+            break;
+    }
+
+    State.phase = p;
+    State.speed = s;
+
+    TerminateTask();
+}
+
 TASK(BRO_Comm)
 {
-    U32 connect_status = 0;
-    
-    /*  Declaring two buffers for communication */
-    bro_fist_t in_packet[BUFFER_SIZE];
-    bro_fist_t out_packet[BUFFER_SIZE];
-    
-    memset (in_packet, 0, sizeof(bro_fist_t) * BUFFER_SIZE);
-    memset (out_packet, 0, sizeof(bro_fist_t) * BUFFER_SIZE);
+    bro_fist_t out[BUFFER_SIZE];
+    value_t tstamp;
+    value_t power;
+    value_t tacho;
 
-    /*  As you might know we have a problem here... :3
-     *  That problem is that the BT device installed on the AT91SAM7 seems to
-     *  have some speed problems with the receiving for the first data via BT.
-     *  It needs ~40ms to get every kind of data (Even a uint32) so we will have
-     *  to use some kind of pooling (not really pooling, because it would lock
-     *  the NXT, mind you ;) ) and work on the data received only when some
-     *  data, usually all of it (I won't tell you to read the device drivers
-     *  for BlueTooth written for nxtOSEK, but the ecrobot_read_bt_packet checks
-     *  if all the data declared in the first byte is present in the device's
-     *  buffer.
-     *
-     *  No problem, with our drill we will pierce the Heavens!
-     *  (And also with our BROFists, right?)
-     */
-    connect_status = ecrobot_read_bt_packet(in_packet, sizeof(bro_fist_t)*BUFFER_SIZE);
-    
-    // Se sono arrivati dei dati...
-    if (connect_status > 0) {
-        // Decodifica ed elabora i pacchetti ricevuti
-        decode_bro_fists (in_packet, out_packet);
-        // Invia la risposta
-        bt_send((U8*)out_packet, sizeof(bro_fist_t)*BUFFER_SIZE);
+    switch (State.phase) {
+        case PHASE_PAUSE:
+            nxt_motor_set_speed(MOTOR_PORT, 0, 1);
+            TerminateTask();
+        case PHASE_START:
+            State.phase = PHASE_RUNNING;
+        default:
+            break;
     }
+
+    tstamp.u = systick_get_ms();
+    power.i = State.speed;
+    tacho.i = nxt_motor_get_count(MOTOR_PORT);
+
+    memset(out, 0, sizeof(out));
+
+    out[0].data = tstamp.f;
+    out[1].data = power.f;
+    out[2].data = tacho.f;
+
+    bt_send((U8 *)out, sizeof(out));
 
     TerminateTask();
 }
