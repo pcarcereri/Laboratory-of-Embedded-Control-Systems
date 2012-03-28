@@ -27,7 +27,7 @@ main (int argc, char *argv[])
     
     bro_bt_connect_device (&bro_spam_socket, options.mac);
     
-    bro_start_server (&bro_server_socket, &bro_client_socket);
+    //bro_start_server (&bro_server_socket, &bro_client_socket);
     
     packet_no = 0;
 
@@ -47,8 +47,7 @@ main (int argc, char *argv[])
             printf("\tDati settati: %.2f\n\n", out_packet[i].data);
         }
 
-    } while ((in_packet[0].operation != BRO_END_COMMUNICATION) && (comm_res
-    >= 0));
+    } while (1);
     
     printf("Exited communication loop after %i packets!\n", packet_no);
 

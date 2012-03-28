@@ -13,10 +13,10 @@
 int bro_bt_connect_device (int * spam_sock, bdaddr_t mac_addr)
 {
 
-    int connect_status;    
-    
+    int connect_status;
+
     struct sockaddr_rc addr_data = { 0 };
-    
+
     /* AF_BLUETOOTH means that it's a Bluetooth socket, while BTPROTO_RFCOMM
     * means that we are going to use the RFCOMM protocol to get the data.
     */
@@ -24,14 +24,14 @@ int bro_bt_connect_device (int * spam_sock, bdaddr_t mac_addr)
 
     /* As written on the official guide for the Bluetooth Libraries...
     * struct sockaddr_rc {
-    *    sa_family_t	rc_family;
-    *    bdaddr_t	    rc_bdaddr;
-    *    uint8_t		rc_channel;
+    *    sa_family_t    rc_family;
+    *    bdaddr_t        rc_bdaddr;
+    *    uint8_t    	rc_channel;
     *  };
     * The sockaddr_rc contains various and interesting values. The
     * communication family, the RFCOMM channel and the MAC address :3
     * In here we set all this data. Fuck yea.
-    */ 
+    */
     addr_data.rc_family   = AF_BLUETOOTH;
     addr_data.rc_channel  = (uint8_t) 1;
     addr_data.rc_bdaddr   = mac_addr;
@@ -51,23 +51,23 @@ size_t bro_bt_scan_devices (bro_bt_device_t *devices[MAX_BT_DEVICES])
     int i;
     char addr[19] = { 0 };
     char name[248] = { 0 };
-    
+
     flags = IREQ_CACHE_FLUSH;
-    
+
     // Initializing BT Device for scan
     dev_id = hci_get_route(NULL);
     sock = hci_open_dev( dev_id );
-    
+
     if (dev_id < 0 || sock < 0) {
       perror("opening socket");
       return -1;
     }
 
     memset(devices, 0, MAX_BT_DEVICES * sizeof(bro_bt_device_t *));
-    
+
     // Allocate memory for all the devices found
     scan_res = (inquiry_info*)malloc(MAX_BT_DEVICES * sizeof(inquiry_info));
-    
+
     // Scan to find all the devices in range
     num_rsp = hci_inquiry(dev_id, BT_INQUIRY_LEN, MAX_BT_DEVICES, NULL,
                           &scan_res, flags);
@@ -80,7 +80,7 @@ size_t bro_bt_scan_devices (bro_bt_device_t *devices[MAX_BT_DEVICES])
     for (i = 0; i < num_rsp; i++) {
       ba2str(&scan_res[i].bdaddr, addr);
       memset(name, 0, sizeof(name));
-      if (hci_read_remote_name(sock, &scan_res[i].bdaddr, sizeof(name), 
+      if (hci_read_remote_name(sock, &scan_res[i].bdaddr, sizeof(name),
           name, 0) < 0) {
         strcpy(name, "[unknown]");
       };
@@ -102,24 +102,28 @@ typedef union {
 } value_t;
 
 FILE *OutDump = NULL;
+#include <assert.h>
 
 int bro_bt_client_fist (bro_fist_t * input_fist, bro_fist_t * out_fist,
                         int spam_sock) {
-    
-    bro_spam_fists_t buffer;
+
+    //bro_spam_fists_t buffer;
     size_t res;
-    
+
+    /*
     buffer.size = sizeof(bro_fist_t) * BUFFER_SIZE;
     memcpy (buffer.packets, input_fist, ( sizeof(bro_fist_t) * BUFFER_SIZE));
-                        
-    //res = send(spam_sock, &buffer, sizeof(bro_spam_fists_t), 0);
-    //if (res < 0) return res;
+
+    res = send(spam_sock, &buffer, sizeof(bro_spam_fists_t), 0);
+    if (res < 0) return res;
+    */
     if (OutDump == NULL) {
         OutDump = fopen("__Dump.txt", "wt");
     }
 
     res = recv(spam_sock, out_fist, ( sizeof(bro_fist_t) * BUFFER_SIZE ), 0);
 
+    /*
     value_t tstamp;
     value_t power;
     value_t tacho;
@@ -130,8 +134,14 @@ int bro_bt_client_fist (bro_fist_t * input_fist, bro_fist_t * out_fist,
 
     fprintf(OutDump, "time=%u power=%i tacho=%i\n",
             tstamp.u, power.i, tacho.i);
-    fflush(OutDump);
-    
+    */
+
+    if (out_fist[0].data == 1.0f)  {
+        fprintf(OutDump, "time=%f power=%f tacho=%f\n",
+                out_fist[1].data, out_fist[2].data, out_fist[3].data);
+        fflush(OutDump);
+    }
+
     return res;
 };
 

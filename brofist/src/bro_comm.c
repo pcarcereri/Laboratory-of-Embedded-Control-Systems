@@ -106,9 +106,10 @@ int bro_server_fist (const bro_fist_t * input_fist, bro_fist_t * out_fist,
      *  idea to be sure that everything is ok.
      */
      
-    assert(scicos_sock >= 0 && spam_sock >= 0);
+    assert(spam_sock >= 0);
 
     //  Let's receive the Fists from the client (Scicos or whatever)
+    /*
     rc = recv(scicos_sock, input_fist, sizeof(bro_fist_t) * BUFFER_SIZE, 0);
     if (rc < 0) {
         perror("recv() failed");
@@ -120,10 +121,12 @@ int bro_server_fist (const bro_fist_t * input_fist, bro_fist_t * out_fist,
         printf("data was sent\n");
         return -1;
     }
+    */
+    bro_bt_client_fist (input_fist, out_fist, spam_sock);
     
+    /*
     if (input_fist[0].operation != BRO_END_COMMUNICATION) {
         //  We are now sending the data to the SPAM and then receive the results...
-        bro_bt_client_fist (input_fist, out_fist, spam_sock);
     } else {
         printf("Received END COMMUNICATION packet!\n");   
     };
@@ -134,6 +137,7 @@ int bro_server_fist (const bro_fist_t * input_fist, bro_fist_t * out_fist,
         perror("send() failed");
         return -1;
     }
+    */
 
     return 0;
 
