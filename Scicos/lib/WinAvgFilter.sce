@@ -15,9 +15,9 @@ function out = WinAvgFilter (in, winsize)
         end
 
         if (wacc == 0)
-            out(i) = 0;
+            out(1, i) = 0;
         else
-            out(i) = acc / wacc;
+            out(1, i) = acc / wacc;
         end
     end
 
