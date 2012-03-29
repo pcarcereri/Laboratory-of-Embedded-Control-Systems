@@ -1,0 +1,8 @@
+What is this directory for?
+===========================
+
+When you use scicos you usually end up in swearing a lot because either
+the software crashes or stops obeying you.
+
+In this directory: specific tasks, not general purpose functions, but
+actual scicos histories.
