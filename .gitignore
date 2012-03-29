@@ -5,5 +5,4 @@
 *.elf
 *.map
 Makelib
-lib
 BROFist
