@@ -15,6 +15,7 @@ if (@ARGV < 1) {
 
 my $start_time = 0;
 my $start_power;
+my $prev_time;
 
 my @Times;
 my @Values;
@@ -27,13 +28,18 @@ while (not $stop and my $row = <$Input>) {
     if ($start_time == 0) {
         $start_time = $time;
         $start_power = $power;
-        $time = 0;
+        $prev_time = $time = 0;
     } else {
         if ($power != $start_power) {
             $stop = 1;
             next;
         }
         $time -= $start_time;
+        if ($time <= $prev_time) {
+            # Seriously, why are there repeated readings??
+            next;
+        }
+        $prev_time = $time;
     }
 
     push @Times, $time;
