@@ -13,42 +13,80 @@ if (@ARGV < 1) {
     exit 1;
 }
 
-my $start_time = 0;
-my $start_power;
-my $prev_time;
+my %Speeds;
 
-my @Times;
-my @Values;
+sub get_speed {
+    my ($k) = @_;
+    my $ret;
+
+    if (not exists $Speeds{$k}) {
+        return $Speeds{$k} = [];
+    } else {
+        return $Speeds{$k};
+    }
+}
+
+my $start_time = 0;
+my $prev_power = 0;
+my $prev_time;
+my $times;
+my $vals;
+my $pow_rec;
+my $last = 0;
 
 open(my $Input, '<', $ARGV[0]);
-my $stop = 0;
-while (not $stop and my $row = <$Input>) {
+while (my $row = <$Input>) {
     my ($time, $power, $tacho) = $row =~ /^time=(\d+\.\d+) power=(\d+\.\d+) tacho=(\d+\.\d+)$/;
 
-    if ($start_time == 0) {
+    $time = int($time);
+    $power = int($power);
+
+    next if $power == 0;
+
+    if ($prev_power != $power) {
+
         $start_time = $time;
-        $start_power = $power;
-        $prev_time = $time = 0;
-    } else {
-        if ($power != $start_power) {
-            $stop = 1;
-            next;
+        $prev_time = -1;
+
+        if ($prev_power != 0) {
+            # We got $pow_rec setted by previous cycle here.
+            push @$pow_rec, ($times, $vals);
         }
-        $time -= $start_time;
-        if ($time <= $prev_time) {
-            # Seriously, why are there repeated readings??
-            next;
-        }
-        $prev_time = $time;
+
+        $prev_power = $power;
+        $times = [];
+        $vals = [];
+        $pow_rec = get_speed($power);
+
     }
 
-    push @Times, $time;
-    push @Values, $tacho;
+    $time -= $start_time;
+    if ($time <= $prev_time) {
+        next;
+    }
+    $prev_time = $time;
+
+    push @$times, $time;
+    push @$vals, $tacho;
 }
+
+# Last entry:
+push @$pow_rec, ($times, $vals);
+
 close($Input);
 
-open(my $Out, '>', $ARGV[0] . ".mat");
-say $Out join('   ', @Times);
-say $Out join('   ', @Values);
-close($Out);
+foreach my $pow (sort keys %Speeds) {
+    my $expers = $Speeds{$pow};
 
+    open (my $out, ">", sprintf("%s_%03d.mat", $ARGV[0], $pow));
+
+    do {
+        my $times = shift @$expers;
+        my $vals = shift @$expers;
+
+        say $out join('   ', @$times);
+        say $out join('   ', @$vals);
+    } while (@$expers > 0);
+
+    close($out);
+}
