@@ -1,6 +1,4 @@
-// Numerical derivation, i.e. compute the
-
-function [xso, yso] = NumDerive (ts, ys)
-    xso = ts(2:$);
-    yso = (ys(2:$) - ys(1:$-1)) ./ (ts(2:$) - ts(1:$-1));
+function outfun = NumDerive (infun)
+    outfun(1,:) = infun(1, 2:$);
+    outfun(2,:) = (infun(2, 2:$) - infun(2, 1:$-1)) ./ (infun(1, 2:$) - infun(1, 1:$-1));
 endfunction

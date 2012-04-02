@@ -1,34 +1,26 @@
-// Filter out data to remove measure noise.
+function [outfun] = WinAvgFilter (infun, winsize)
 
-function out = WinAvgFilter (in, winsize)
+    N = size(infun, 2) - winsize + 1;
+    outfun = zeros(2, N);
 
-    N = size(in, 2);
-    for i = [1 : N - winsize + 1]
+    for i = [1 : N]
         weight = 1;
         acc = 0;
         wacc = 0;
 
-        for v = in(i : i + winsize - 1)
+        for v = infun(2, i : i + winsize - 1)
             acc = acc + weight * v;
             wacc = wacc + weight;
             weight = weight / 2;
         end
 
         if (wacc == 0)
-            out(1, i) = 0;
+            outfun(2, i) = 0;
         else
-            out(1, i) = acc / wacc;
+            outfun(2, i) = acc / wacc;
         end
+        outfun(1, i) = infun(1, i);
+
     end
 
 endfunction
-
-// Filtering of data
-// Writing such a trivial function has been a HELL. What the heck were
-// they thinking when they wrote this crappy language?
-//
-// Hints: never use operators like += and friends. And when you use the
-// 'disp' function (for displaying variable content) be aware that prints
-// data in *REVERSE ORDER* (Yeah, seriously!).
-
-
