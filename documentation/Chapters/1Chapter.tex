@@ -1,0 +1,14 @@
+The system for both the data acquisition and data processing is composed of a Lego Mindstorm and linux o.s. pc. The code language for the brick to be programmed is the c, which is a well known language and permits to the developer a simple debugging process. \\ Once the program has been compiled and uploaded on the brick (instruction on nxtOSEK website), some steps are needed for the data to be transferred. \\
+\begin{itemize}
+\item launch the BROFist file with the command '-l', this in order to get the bluetooth identification key of the brick;
+\item launch the BROFist file with the command '-m' followed by the bluetooth key gets at the previous step, this let the bluetooth data transfer from the brick to the pc (and viceversa) possible;   
+\item select the 'BROclient' program and run it by pressing the run button;
+\end{itemize}
+
+While the program is running, on the brick monitor is shown information about the software status:
+\begin{itemize}
+\item name and release of the program; 
+\item running phase: every 5 second the motor velocity changes (interval from -100 to 100), this permits to get data from a vast range of velocity;  
+\item motor status: information about the motor movement, whether it is running or is not; 
+\end{itemize}
+The program stops at any time if the ENTER button (that orange) is pressed; this stop the program by invoking the TaskTerminate() method. 

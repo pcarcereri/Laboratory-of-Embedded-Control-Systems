@@ -1,0 +1,82 @@
+% classe del documento
+\documentclass[a4paper,10pt]{book}
+
+%package necessari
+\usepackage{graphicx}
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{verbatim}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{listings}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\usepackage{graphicx}
+
+
+% informazioni sugli autori
+\author{Dacav, Pietro, Pavel}
+\title{Group Editor}
+
+% inzio documento
+\begin{document}
+\pagestyle{plain}
+
+% parte centrale della copertina
+\begin{center} 
+
+\vskip 4cm
+\large {First Assignement}
+\vskip 1cm
+\huge {THE LEGO MOTOR SYSTEM ANALYSIS}
+\vskip 6cm
+\large {Giovanni Simoni} \\
+\large {Pietro Carcereri} \\
+\large {Pavel Velychko} \\
+\vskip 3cm
+\large {Group 1 Editor}
+\vskip 2cm
+\vskip 1cm
+\large {AA 2011-2012}
+\vskip 0.5cm
+\today
+\end{center}
+
+
+\parskip 12.0pt
+
+\tableofcontents
+
+\chapter{INTRODUCTION}
+\input{Chapters/1Chapter.tex}
+
+\chapter{DATA ACQUISITION} 
+\section{Lego motor (com'e, caratteristiche, approccio)\dots}
+\input{Chapters/2Chapter.tex}
+
+\section{Signal applied to the motor (freq, qualita campioni, grafici \dots)}
+\input{Chapters/3Chapter.tex}
+
+\section{System response frequency\dots}
+\section{Challenges and problems\dots}
+
+\chapter{DATA ANALYSIS\dots}
+\section{Signal quality (com'era? eventuali adjustements?)\dots}
+
+\section{Step response analysis (steady value, rise time etc.\dots}
+
+\chapter{DATA ESTIMATIONS}
+\section{Second order system approximation (dumping factor and sampling frequency)\dots}
+\section{Data comparison (fra misurato e reale, grafici++)\dots}
+\section{Frequency response analisys (to a sinusoidal signal)\dots}
+
+
+% Bibliografia
+\begin{thebibliography}{9}
+\bibitem{pantieri:arte}
+
+Palopoli website \url{http://www.lorenzopantieri.net/LaTeX_files/ArteLaTeX.pdf}.
+\end{thebibliography}
+\end{document}
+
+
+\end{document}
