@@ -36,7 +36,9 @@ my $last = 0;
 
 open(my $Input, '<', $ARGV[0]);
 while (my $row = <$Input>) {
-    my ($time, $power, $tacho) = $row =~ /^time=(\d+\.\d+) power=(\d+\.\d+) tacho=(\d+\.\d+)$/;
+    chop $row;
+    my ($time, $power, $tacho) =
+        $row =~ /^time=(\d+\.\d+) power=(\-?\d+\.\d+) tacho=(\-?\d+\.\d+)$/;
 
     $time = int($time);
     $power = int($power);
@@ -57,7 +59,6 @@ while (my $row = <$Input>) {
         $times = [];
         $vals = [];
         $pow_rec = get_speed($power);
-
     }
 
     $time -= $start_time;
@@ -69,24 +70,31 @@ while (my $row = <$Input>) {
     push @$times, $time;
     push @$vals, $tacho;
 }
+# Last entry is just ignored: probably is broken because we interrupted
+# the experiment.
 
-# Last entry:
-push @$pow_rec, ($times, $vals);
-
+say "File terminated";
 close($Input);
 
 foreach my $pow (sort keys %Speeds) {
     my $expers = $Speeds{$pow};
+    my $i = 0;
+    my $N = @$expers;
 
-    open (my $out, ">", sprintf("%s_%03d.mat", $ARGV[0], $pow));
+    if ($N) {
+        say "Experiments for power=$pow: ", $N;
+        while (@$expers > 0) {
+            my $times = shift @$expers;
+            my $vals = shift @$expers;
 
-    do {
-        my $times = shift @$expers;
-        my $vals = shift @$expers;
+            open (my $out, ">", sprintf("%s_%s%03u_%03u.mat", $ARGV[0],
+                                        $pow >= 0 ? '+' : '-', abs($pow),
+                                        $i));
+            say $out join('   ', @$times);
+            say $out join('   ', @$vals);
+            close($out);
 
-        say $out join('   ', @$times);
-        say $out join('   ', @$vals);
-    } while (@$expers > 0);
-
-    close($out);
+            $i ++;
+        }
+    }
 }
