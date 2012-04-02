@@ -71,25 +71,27 @@ typedef enum {
     PHASE_START, PHASE_PAUSE, PHASE_RUNNING
 } phase_t;
 
+#define MOTOR_PORT NXT_PORT_A
+#define INCREMENT 10
+
 struct State {
     phase_t phase;
     int speed;
 } State = {
     .phase = PHASE_PAUSE,
-    .speed = 0
+    .speed = -100
 };
-
-#define MOTOR_PORT NXT_PORT_A
-#define INCREMENT 10
 
 int next_speed (int s)
 {
-    /* 10, 20, ... 90, 100, -100, -90, ..., -10, 10, 20 ... */
-    if (s < 100) {
-        s += INCREMENT;
-        if (s == 0) s += INCREMENT; // skip 0
+    if (s < -30 || s > 30 ) {
+        if (s < 100) {
+            s += INCREMENT;
+        } else {
+            s = -100;
+        }
     } else {
-        s = -100;
+        s = 30;
     }
 
     return s;
