@@ -3,12 +3,12 @@
 // Working on the fact we have repetitions in time, so we get null intervals
 // and divide-by-zero errors by consequence.
 
-loadmatfile('Data_070', '-ascii');
+filename = 'Data_030';
+loadmatfile(filename, '-ascii');
+raw = eval(filename);
 
 exec "./Scicos/lib/NumDerive.sce"
 exec "./Scicos/lib/WinAvgFilter.sce"
-
-raw = Data_070;
 
 winsize = 5;
 smooth = WinAvgFilter(raw, winsize);
