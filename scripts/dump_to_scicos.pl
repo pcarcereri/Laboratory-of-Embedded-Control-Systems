@@ -88,7 +88,7 @@ foreach my $pow (sort keys %Speeds) {
             my $vals = shift @$expers;
 
             open (my $out, ">", sprintf("%s_%s%03u_%03u.mat", $ARGV[0],
-                                        $pow >= 0 ? '+' : '-', abs($pow),
+                                        $pow >= 0 ? 'p' : 'm', abs($pow),
                                         $i));
             say $out join('   ', @$times);
             say $out join('   ', @$vals);
