@@ -7,7 +7,7 @@ function [risetime] = RiseTime (time, response, steadystate, maxRaisePerc, minRa
   y=find(x);
   start = time(min(y));
 
-  w=(response > (steadystate * minRaisePerc));
+  w=(response < (steadystate * minRaisePerc));
   x=find(w);
   stop = time(min(x));
 
@@ -15,4 +15,3 @@ function [risetime] = RiseTime (time, response, steadystate, maxRaisePerc, minRa
   risetime = stop-start;
 
 endfunction
-
