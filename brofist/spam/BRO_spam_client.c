@@ -84,13 +84,13 @@ struct State {
 
 int next_speed (int s)
 {
-    if (s < -30 || s > 30 ) {
+    if (s < -30 || s >= 30) {
         if (s < 100) {
             s += INCREMENT;
         } else {
             s = -100;
         }
-    } else {
+    } else if (s == -30) {
         s = 30;
     }
 
