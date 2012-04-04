@@ -1,26 +1,11 @@
-function [outfun] = WinAvgFilter (infun, winsize)
+function flt = WinAvgFilter (behavior, k = 500)
 
-    N = size(infun, 2) - winsize + 1;
-    outfun = zeros(2, N);
-
-    for i = [1 : N]
-        weight = 1;
-        acc = 0;
-        wacc = 0;
-
-        for v = infun(2, i : i + winsize - 1)
-            acc = acc + weight * v;
-            wacc = wacc + weight;
-            weight = weight / 2;
-        end
-
-        if (wacc == 0)
-            outfun(2, i) = 0;
-        else
-            outfun(2, i) = acc / wacc;
-        end
-        outfun(1, i) = infun(1, i);
-
+    flt = behavior(:, 1 : end - k);
+    buf = zeros(1, k);
+    for i = 1 : length(flt)
+        buf(mod(i, k) + 1) = behavior(2, i);
+        flt(2, i) = mean(buf);
     end
 
 endfunction
+
