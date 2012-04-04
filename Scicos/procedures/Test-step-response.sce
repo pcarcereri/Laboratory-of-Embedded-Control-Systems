@@ -3,16 +3,16 @@
 // Working on the fact we have repetitions in time, so we get null intervals
 // and divide-by-zero errors by consequence.
 
-filename = 'Data_030';
+libdir = "../lib/scicos/";
+exec (libdir + "NumDerive.sce");
+exec (libdir + "WinAvgFilter.sce");
+exec (libdir + "Filter.sce");
+
+filename = 'Raw_p060_000';
+
 loadmatfile(filename, '-ascii');
 raw = eval(filename);
+der = NumDerive(raw);
+ders = filter(der, 6);
 
-exec "./Scicos/lib/NumDerive.sce"
-exec "./Scicos/lib/WinAvgFilter.sce"
-
-winsize = 5;
-smooth = WinAvgFilter(raw, winsize);
-
-der = NumDerive(smooth);
-
-plot(raw(1,:), raw(2,:));
+plot(ders(1,:), ders(2,:), 'r');
