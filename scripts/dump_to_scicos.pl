@@ -76,13 +76,16 @@ while (my $row = <$Input>) {
 say "File terminated";
 close($Input);
 
+open(my $metainfo, ">", $ARGV[0] . "_meta.mat");
+
 foreach my $pow (sort keys %Speeds) {
     my $expers = $Speeds{$pow};
     my $i = 0;
-    my $N = @$expers;
+    my $N = @$expers / 2;
 
     if ($N) {
         say "Experiments for power=$pow: ", $N;
+        say $metainfo "$pow   $N";
         while (@$expers > 0) {
             my $times = shift @$expers;
             my $vals = shift @$expers;
@@ -98,3 +101,5 @@ foreach my $pow (sort keys %Speeds) {
         }
     }
 }
+
+close($metainfo);
