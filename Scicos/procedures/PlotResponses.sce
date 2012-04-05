@@ -1,6 +1,7 @@
 libdir = "./../lib/scicos/";
 exec (libdir + "NumDerive.sce");
 exec (libdir + "WinAvgFilter.sce");
+exec (libdir + "ButterFilter.sce");
 exec (libdir + "Filter.sce");
 exec (libdir + "Overshoot.sce");
 exec (libdir + "SteadyState.sce");
@@ -33,9 +34,13 @@ for ridx = [1:size(meta, 1)]
         loadmatfile(raw_data_path + filename, '-ascii');
         raw = abs(eval(filename));
         der = NumDerive(raw);
-        ders = WinAvgFilter(der, 50);
+        ders_bf = ButterFilter(der, 10);
+        ders_wn = WinAvgFilter(der, 50);
 
-        plot(ders(1,:), ders(2,:));
+        plot(ders_bf(1,:), ders_bf(2,:), 'r', ders_wn(1,:), ders_wn(2,:), 'k');
+        //plot(ders_wn(1,:), ders_wn(2,:));
+        //plot(ders_bf(1,:), ders_bf(2,:));
     end
 
 end
+
