@@ -8,7 +8,7 @@ exec (libdir + "SteadyState.sce");
 exec (libdir + "SettlingTime.sce");
 exec (libdir + "Xsi.sce");
 exec (libdir + "Frequency.sce");
-exec (libdir + "RiseTime2.sce");
+exec (libdir + "RiseTime.sce");
 
 raw_data_path = './';
 raw_data_filename = 'Raw';
