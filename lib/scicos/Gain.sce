@@ -1,6 +1,6 @@
 function g = Gain (sin_behavior, ratios)
 
-    vals = sin_behavior(2,:);
+    vals = abs(sin_behavior(2,:));
     g = max(vals);
 
     for r = ratios
