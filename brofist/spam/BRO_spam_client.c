@@ -123,7 +123,8 @@ void send_data ()
     out[0].data = 1.0f;
     out[1].data = (float) systick_get_ms();
     out[2].data = (float) State.speed;
-    out[3].data = (float) nxt_motor_get_count(MOTOR_PORT);
+    out[3].data = (float) 0.0f;
+    out[4].data = (float) nxt_motor_get_count(MOTOR_PORT);
 
     bt_send((U8 *)out, sizeof(bro_fist_t) * BUFFER_SIZE);
 }

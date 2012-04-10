@@ -137,8 +137,9 @@ int bro_bt_client_fist (bro_fist_t * input_fist, bro_fist_t * out_fist,
     */
 
     if (out_fist[0].data == 1.0f)  {
-        fprintf(OutDump, "time=%f power=%f tacho=%f\n",
-                out_fist[1].data, out_fist[2].data, out_fist[3].data);
+        fprintf(OutDump, "time=%f power=%f phase=%f tacho=%f\n",
+                out_fist[1].data, out_fist[2].data, out_fist[3].data,
+                out_fist[4].data);
         fflush(OutDump);
     }
 
