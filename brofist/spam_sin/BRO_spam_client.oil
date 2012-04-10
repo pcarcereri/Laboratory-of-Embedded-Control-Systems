@@ -1,0 +1,104 @@
+#include "implementation.oil"
+
+CPU ATMEL_AT91SAM7S256
+{
+	OS LEJOS_OSEK
+	{
+    	STATUS = EXTENDED;
+    	STARTUPHOOK = TRUE;
+    	ERRORHOOK = FALSE;
+    	SHUTDOWNHOOK = FALSE;
+    	PRETASKHOOK = TRUE;
+    	POSTTASKHOOK = FALSE;
+    	USEGETSERVICEID = FALSE;
+    	USEPARAMETERACCESS = FALSE;
+    	USERESSCHEDULER = FALSE;
+  	};
+
+  	APPMODE appmode1{}; 
+
+  	RESOURCE lcd
+	{
+  		RESOURCEPROPERTY = STANDARD;
+  	};
+
+    TASK Experiment
+    {
+        AUTOSTART = FALSE;
+        PRIORITY = 3;
+        ACTIVATION = 1;
+        SCHEDULE = FULL;
+        STACKSIZE = 512;
+    };
+
+  	TASK Sample
+    {
+    	AUTOSTART = FALSE;
+    	PRIORITY = 2;
+    	ACTIVATION = 1;
+    	SCHEDULE = FULL;
+    	STACKSIZE = 256;
+  	};
+
+  	TASK Display
+  	{
+    	AUTOSTART = FALSE;
+    	PRIORITY = 1;
+    	ACTIVATION = 1;
+    	SCHEDULE = FULL;
+    	STACKSIZE = 512;
+    	RESOURCE = lcd;
+  	};
+
+  	COUNTER SysTimer
+  	{
+    	MINCYCLE = 1;
+    	MAXALLOWEDVALUE = 10000;
+    	TICKSPERBASE = 1;
+  	};
+
+  	ALARM SampleAlarm
+  	{
+    	COUNTER = SysTimer;
+    	ACTION = ACTIVATETASK
+    	{
+      		TASK = Sample;
+    	};
+    	AUTOSTART = TRUE
+    	{
+      		ALARMTIME = 1;
+      		CYCLETIME = 5;      // ms
+      		APPMODE = appmode1;
+    	};
+  	};
+
+  	ALARM DisplayAlarm
+  	{
+    	COUNTER = SysTimer;
+    	ACTION = ACTIVATETASK
+    	{
+      		TASK = Display;
+    	};
+    	AUTOSTART = TRUE
+    	{
+      		ALARMTIME = 1;
+      		CYCLETIME = 100;    // ms
+      		APPMODE = appmode1;
+    	};
+  	};
+
+    ALARM ExperimentAlarm
+    {
+        COUNTER = SysTimer;
+        ACTION = ACTIVATETASK
+        {
+            TASK = Experiment;
+        };
+        AUTOSTART = TRUE
+        {
+            ALARMTIME = 1;
+            CYCLETIME = 5000;     // ms
+            APPMODE = appmode1;
+        };
+    };
+};
